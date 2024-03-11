@@ -30,4 +30,69 @@ class AirplaneTests(APITestCase):
         self.assertEqual(airplane.fuel_consumption, fuel_consumption)
         self.assertEqual(airplane.max_flight_time, max_flight_time)
     
+
+    def test_create_10_airplanes(self):
+        """
+        Ensure we can create 10 airplanes from input data.
+        """
+        url = '/airplanes/'
+        dataList:list[Airplane] = [
+            {
+                "id": 2,
+                "passenger_capacity": 430
+            },
+            {
+                "id": 3,
+                "passenger_capacity": 330
+            },
+            {
+                "id": 4,
+                "passenger_capacity": 230
+            },
+            {
+                "id": 5,
+                "passenger_capacity": 190
+            },
+            {
+                "id": 6,
+                "passenger_capacity": 660
+            },
+            {
+                "id": 7,
+                "passenger_capacity": 710
+            },
+            {
+                "id": 8,
+                "passenger_capacity": 890
+            },
+            {
+                "id": 9,
+                "passenger_capacity": 930
+            },
+            {
+                "id": 10,
+                "passenger_capacity": 630
+            },
+            {
+                "id": 11,
+                "passenger_capacity": 530
+            }
+        ]
+        response = self.client.post(url, dataList, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Airplane.objects.count(), 10)
+        airplanes = Airplane.objects.all()
+        
+        for i in range(0,10):
+            self.assertEqual(airplanes[i].id, dataList[i]['id'])
+            self.assertEqual(airplanes[i].passenger_capacity, dataList[i]['passenger_capacity'])
+            
+            fuel_tank_capacity: int = dataList[i]['id'] * 200
+            fuel_consumption: float = (log10(dataList[i]['id']) * .80) + (dataList[i]['passenger_capacity']*0.002)
+            max_flight_time: float = fuel_tank_capacity / fuel_consumption
+            
+            self.assertEqual(airplanes[i].fuel_tank_capacity, fuel_tank_capacity)
+            self.assertEqual(airplanes[i].fuel_consumption, fuel_consumption)
+            self.assertEqual(airplanes[i].max_flight_time, max_flight_time)
+
     
